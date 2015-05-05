@@ -349,7 +349,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.60632098"
      inkscape:cx="-379.62314"
-     inkscape:cy="382.63905"
+     inkscape:cy="717.66347"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -366,7 +366,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -692,14 +692,14 @@
     <text
        xml:space="preserve"
        style="font-size:48px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="264.58286"
+       x="324.58286"
        y="944.86639"
        id="text13157"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan13159"
-         x="264.58286"
-         y="944.86639">Auxiliary</tspan></text>
+         x="324.58286"
+         y="944.86639">Aux</tspan></text>
     <rect
        style="fill:none;stroke:#000100;stroke-width:1.97599995;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect13041-2"
@@ -708,13 +708,13 @@
        x="193.51839"
        y="79.179237"
        ry="31.41836"
-       inkscape:export-filename="/home/bischjer/workspace/auxiliary/design/auxiliary.png"
+       inkscape:export-filename="/home/bischjer/workspace/aux_bischjer/design/aux.png"
        inkscape:export-xdpi="118.82117"
        inkscape:export-ydpi="118.82117" />
     <g
        id="g13171-2"
        transform="matrix(1.3749407,0,0,1.3749407,941.5227,-29.50243)"
-       inkscape:export-filename="/home/bischjer/workspace/auxiliary/design/auxiliary.png"
+       inkscape:export-filename="/home/bischjer/workspace/aux_bischjer/design/aux.png"
        inkscape:export-xdpi="118.82117"
        inkscape:export-ydpi="118.82117">
       <path
@@ -755,18 +755,18 @@
     <text
        xml:space="preserve"
        style="font-size:48px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Streetvertising;-inkscape-font-specification:Streetvertising Bold"
-       x="275.01694"
+       x="335.01694"
        y="488.28537"
        id="text13157-0"
        sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/bischjer/workspace/auxiliary/design/auxiliary.png"
+       inkscape:export-filename="/home/bischjer/workspace/aux_bischjer/design/aux.png"
        inkscape:export-xdpi="118.82117"
        inkscape:export-ydpi="118.82117"><tspan
          sodipodi:role="line"
          id="tspan13159-3"
-         x="275.01694"
+         x="335.01694"
          y="488.28537"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Streetvertising;-inkscape-font-specification:Streetvertising Bold">Auxiliary</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Streetvertising;-inkscape-font-specification:Streetvertising Bold">Aux</tspan></text>
     <rect
        style="fill:#ffffff;stroke:#000100;stroke-width:1.97599995000000006;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect13041-2-6"
