@@ -1,4 +1,4 @@
-from aux.protocol.transport import TCPTransport, TLS_TCPTransport
+from aux.protocol.transport import (TCPTransport, TLS_TCPTransport, TCP_DEFAULT_FRAME_SIZE)
 from urlparse import urlparse, urlunparse
 from aux.protocol.http.transfer import transferFactory
 from aux.protocol.http.mime import mimeFactory
@@ -111,7 +111,10 @@ class HTTPRequest(HTTPMessage):
                                           request_data.get('body', ''))
 
     def __str__(self):
-        return CRLF.join(["%s %s HTTP/%0.1f" % (self.method, self.url.path, self.http_version),
+        path = self.url.path
+        if len(self.url.query) > 0:
+            path = "%s?%s" % (path, self.url.query)
+        return CRLF.join(["%s %s HTTP/%0.1f" % (self.method, path, self.http_version),
                           super(HTTPRequest, self).__str__()])
 
     
@@ -172,7 +175,7 @@ class HTTP(object):
 
     def receive(self, transport):
         #TODO: this impl needs TLC
-        inbuf = transport.recv()
+        inbuf = transport.recv(TCP_DEFAULT_FRAME_SIZE)
         inbuf = inbuf.split("\n")
         # inbuf = transport.recv_all()
         sl = inbuf[0]
@@ -182,7 +185,6 @@ class HTTP(object):
         try:
             status = int(re_startline.match(sl).groups()[0])
         except Exception, e:
-            print e.message
             log.error(e.message)
             raise Exception
 
@@ -202,8 +204,8 @@ class HTTP(object):
             else:
                 break
         tail_msg = tail_msg[len(t_lines[0]):]
-        if self.__has_trace:
-            print tail_msg
+        # if self.__has_trace:
+        #     print tail_msg
         log.debug(headers)
         Transfer = transferFactory(headers)
         Mime = mimeFactory(headers)
@@ -226,10 +228,19 @@ class HTTP(object):
         response.request_pointer = request
         return response
 
+class HTTPScheme(object):
+    scheme = "http://"
+    
+    def __call__(self, scheme):
+        self.scheme = scheme
+
+    def __repr__(self):
+        return self.scheme
     
 class HTTPClient(object):
     auth = auth
     __has_trace = False
+    scheme = HTTPScheme()
     
     def has_trace(self, should_trace=None):
         if should_trace is not None:
@@ -258,17 +269,20 @@ class HTTPClient(object):
     def put(self, url, headers={}, body="", request=None):
         return self.http_send('PUT', url, headers, body, request)
 
+    def patch(self, url, headers={}, body="", request=None):
+        return self.http_send('PATCH', url, headers, body, request)
+        
     def delete(self, url, headers={}, body="", request=None):
         return self.http_send('DELETE', url, headers, body, request)
 
-    # def connect(self, url, headers={}, body="", request=None):
-    #     return self.http_send('CONNECT', url, headers, body, request)
+    def connect(self, url, headers={}, body="", request=None):
+        return self.http_send('CONNECT', url, headers, body, request)
 
-    # def trace(self, url, headers={}, body="", request=None):
-    #     return self.http_send('TRACE', url, headers, body, request)    
+    def trace(self, url, headers={}, body="", request=None):
+        return self.http_send('TRACE', url, headers, body, request)    
 
-    # def options(self, url, headers={}, body="", request=None):
-    #     return self.http_send('OPTIONS', url, headers, body, request)    
+    def options(self, url, headers={}, body="", request=None):
+        return self.http_send('OPTIONS', url, headers, body, request)    
 
     def basic(self, credentials):
         return {'Authorization': 'Basic %s' % base64.b64encode(
