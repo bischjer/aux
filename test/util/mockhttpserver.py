@@ -67,7 +67,7 @@ def application(environ, start_response):
     
     if 'SOAPAction' in environ.get('request', None):
         return soap_app(environ, start_response)
-    return "HTTP/1.1 404\n\n"
+    return "HTTP/1.1 404\r\n\r\n"
 
 def call_application(app, environ):
     body = []

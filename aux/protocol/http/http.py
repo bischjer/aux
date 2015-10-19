@@ -223,6 +223,9 @@ class HTTP(object):
             request.headers.update({'Content-Length': '%i' % len(request.body)})
         transport = self.get_transport(request.url, scheme=request.url.scheme)
         log.debug("HTTPRequest:\n%s\n", request)
+        from datetime import datetime, timedelta
+        now = datetime.now()
+        print 'hello', now
         transport.send(str(request))
         response = self.receive(transport)
         response.request_pointer = request
