@@ -59,6 +59,7 @@ def authenticator_app(environ, start_response):
         return True
     return False
 
+
 def application(environ, start_response):
     # if not authenticator_app(environ, start_response):
     #     return "HTTP/1.1 403\n\n"
@@ -69,12 +70,34 @@ def application(environ, start_response):
         return soap_app(environ, start_response)
     return "HTTP/1.1 404\r\n\r\n"
 
-def call_application(app, environ):
+
+def call_application(apps, environ):
     body = []
     status_headers = [None, None]
+
+    class NoRouteFoundException(Exception): pass
+
+    class MalformedRequestHeaderException(Exception):pass
+    
+    def not_found_app(environ, start_response):
+        return "HTTP/1.1 404\r\n\r\n"
+    
     def start_response(status, headers):
         status_headers[:] = [status, headers]
         return body.append(status_headers)
+
+    try:
+        try:
+            request_path = environ.get('request').split()[1]
+        except Exception, e:
+            raise MalformedRequestHeaderException(e.message)
+        try:
+            app = [apps.get(a) for a in apps.keys() if a in request_path][0]
+        except Exception, e:
+            raise NoRouteFoundException(e.message)
+    except Exception, e:
+        app = not_found_app
+    
     app_iter = app(environ, start_response)
     try:
         for item in app_iter:
@@ -92,6 +115,7 @@ class MockHTTPServer(object):
         self.__socket = socket.socket()
         self.__socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         self.__authScheme = None
+        self.applications = {}#TODO: need smarter routing to support default / route to work with call_application lookup
         
     def start(self):
         self.__socket.bind((self.host, self.port))
@@ -99,8 +123,7 @@ class MockHTTPServer(object):
         while True:
             c, addr = self.__socket.accept()
             request = c.recv(4096)#TODO: read protocol transport
-            print request
-            response = call_application(application,
+            response = call_application(self.applications,
                                         {'request': request,
                                          'authScheme': self.__authScheme})
             c.send(response[2])
@@ -140,7 +163,7 @@ class MockHTTPSServer(MockHTTPServer):
                 certfile='../data/certs/unit-test.crt',
                 keyfile='../data/certs/unit-test.key',
                 ssl_version=ssl.PROTOCOL_TLSv1)
-            response = call_application(application,
+            response = call_application(self.applications,
                                         {'request': sock.read(),
                                          'authScheme': self.__authScheme})
             sock.send(response[2])
@@ -151,10 +174,10 @@ class MockHTTPSServer(MockHTTPServer):
         self.__socket.shutdown(SHUT_RDWR)
         self.parent.stop()
 
+    # def set_authentication(self, authentication):
+    #     self.__authScheme = authentication
 
-    def set_authentication(self, authentication):
-        self.__authScheme = authentication
-
+        
 class Channel(object):
 
     def __init__(self, host, port):
@@ -242,28 +265,3 @@ class WebServer(object):
     
         
     
-#*******************************************************************
-#OL' HEAP
-#
-# def handle_request(cls, request):
-#     # print request
-#     if cls._MockHTTPServer__authScheme != None:
-#         if 'basic' in cls._MockHTTPServer__authScheme.lower() :
-#             if not authenticate(request):
-#                 return '''
-# HTTP/1.1 401
-# WWW-Authenticate: Basic realm="aux realm"
-# Content-Type: text/xml;charset=utf-8
-# Connection: keep-alive
-
-# '''
-#     if '__GET /basic_authenticated' in request:
-#         return '''
-# HTTP/1.1 403 OK
-
-# basic auth'''
-# #         https_response = '''\
-# # HTTP/1.1 401
-# # WWW-Authenticate: Basic realm="AUX-test"
-# # '''
-#     return http_response

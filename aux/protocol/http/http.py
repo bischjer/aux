@@ -2,6 +2,7 @@ from aux.protocol.transport import (TCPTransport, TLS_TCPTransport, TCP_DEFAULT_
 from urlparse import urlparse, urlunparse
 from aux.protocol.http.transfer import transferFactory
 from aux.protocol.http.mime import mimeFactory
+from datetime import datetime
 import auth
 import logging
 import aux
@@ -122,6 +123,7 @@ class HTTPResponse(HTTPMessage):
     def __init__(self, status, response_data={}, request_pointer=None):
         self.status = status
         self.request_pointer = request_pointer
+        self.time = None
         super(HTTPResponse, self).__init__(response_data.get('headers', {}),
                                            response_data.get('body', ''))
         
@@ -223,14 +225,15 @@ class HTTP(object):
             request.headers.update({'Content-Length': '%i' % len(request.body)})
         transport = self.get_transport(request.url, scheme=request.url.scheme)
         log.debug("HTTPRequest:\n%s\n", request)
-        from datetime import datetime, timedelta
-        now = datetime.now()
-        print 'hello', now
+        then = datetime.now()
         transport.send(str(request))
         response = self.receive(transport)
+        response.time = datetime.now() - then
+        log.debug("The request took : %s microseconds." % (response.time.microseconds))
         response.request_pointer = request
         return response
 
+    
 class HTTPScheme(object):
     scheme = "http://"
     
