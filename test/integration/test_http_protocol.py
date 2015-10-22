@@ -1,47 +1,49 @@
 from unittest2 import TestCase
-from aux.protocol.http import HTTP, HTTPRequest
+from aux.api import http
 from ..util.mockhttpserver import MockHTTPServer
 
 
 class HTTPProtocolTest(TestCase):
 
     def setUp(self):
+        def short_response_app(environ, start_response):
+            return "HTTP/1.1 200 OK\r\nContent-Length: 22\r\n\r\n<html>It works!</html>\r\n\r\n"
+        def long_response_app(environ, start_response):
+            ltrs = [a for a in ['A'*20000]]
+            return "HTTP/1.1 200 OK\r\nContent-Length: 20000\r\n\r\n%s\r\n\r\n" % (ltrs)
+        
+        
         self.test_server = MockHTTPServer(port=8989)
+        self.test_server.applications['/response/short'] = short_response_app
+        self.test_server.applications['/response/long'] = long_response_app
         self.test_server.start_thread()
-        self.headers = {'Host': 'a.a.a',
-                        'User-Agent': 'Aux/0.1 (X11; Ubuntu; Linux x86_64; rv:24.0)',
-                        'Accept':'text/html, application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                        'Accept-Language': 'en-US,en-q=0.5',
-                        'Referer': 'http://abc.abc',
-                        'Cache-Control': 'max-stale=0',
-                        'Connection': 'Keep-Alive'
-                        }
         
     def tearDown(self):
         self.test_server.stop()
     
-    def xtest_connection(self):
-        http = HTTP()
-        url = 'http://127.0.0.1:8989'
-        self.headers['Test-Controller'] = 'short_http_response'
-        request = HTTPRequest(url,
-                              {'method':'GET',
-                               'headers': self.headers,
-                               'data': 'fakedata'})
-        response = http.send(request)
-        print 'response: [', response, ']'
-        self.assertTrue('200 OK' in response)
-        self.assertTrue('<html>' in response)
+    def test_connection(self):
+        response = http.get('http://127.0.0.1:8989/response/short',
+                            headers={'Host': 'a.a.a',
+                                     'User-Agent': 'Aux/0.1',
+                                     'Accept':'text/html',
+                                     'Connection': 'Keep-Alive'
+                                     })
+        self.assertEquals(200,
+                          response.status)
+        self.assertEquals('<html>It works!</html>',
+                          response.body)
 
         
     def xtest_handle_long_response(self):
-        http = HTTP()
-        url = 'http://127.0.0.1:8989'
-        self.headers['Test-Controller'] = 'long_http_response'
-        request = HTTPRequest(url,
-                              {'method':'GET',
-                               'headers': self.headers,
-                               'data': 'fakedata'})
-        response = http.send(request)
-        print 'response: [', response, ']'
-        #create a test mock handler http in backend
+        #TODO: Overread bug
+        response = http.get('http://127.0.0.1:8989/response/long',
+                            headers={'Host': 'a.a.a',
+                                     'User-Agent': 'Aux/0.1',
+                                     'Accept':'text/html',
+                                     'Connection': 'Keep-Alive'
+                                     })
+        self.assertEquals(200,
+                          response.status)
+        self.assertEquals(20000,
+                          len(response.body))
+

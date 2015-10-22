@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.1'
+version = '0.0.2'
 
 setup(name='aux',
       version=version,
@@ -19,12 +19,11 @@ setup(name='aux',
       zip_safe=False,
       install_requires=[
         'unittest2',
+        'lxml',
         'nose',
         'sphinx',
         'Fabric',
-        'Twisted>=12.1',
         'Werkzeug',
-        # 'carnifex',
         'colorama',
       ],
       entry_points={
