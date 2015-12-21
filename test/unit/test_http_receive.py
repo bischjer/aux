@@ -66,6 +66,22 @@ class HTTPReceiveTest(TestCase):
         self.assertEqual(len(response.body), 0)
 
 
+    def test_receive_200_with_content_known_to_fail(self):
+        message = """HTTP/1.1 201 Created
+Content-Length: 227
+Content-Type: application/json
+Server: Eve/0.5.3 Werkzeug/0.9.6 Python/2.7.6
+Date: Sun, 13 Dec 2015 22:20:20 GMT
+
+{"_updated": "Sun, 13 Dec 2015 22:20:20 GMT", "_links": {"self": {"href": "user/2", "title": "user"}}, "_created": "Sun, 13 Dec 2015 22:20:20 GMT", "_status": "OK", "_id": 2, "_etag": "51582c89efd0fd1ce44fd5e76519d6aa47c6f441"}"""
+        http = HTTP()
+        response = http.receive(FakeTransport(message))
+        self.assertEqual(len(response.body), 227)
+
+
+
+
+        
     def test_receive_200_with_chunked_body_one_terminating_zero(self):
         content = '{"status":400,"code":"Client.UserInputException","message":"No content to map due to end-of-input\n at [Source: org.apache.catalina.connector.CoyoteInputStream@3d820d7f; line: 1, column: 1]"}'
         message = '''HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nTransfer-Encoding : chunked\r\n\r\n%s\r\n%s\r\n
@@ -85,6 +101,15 @@ class HTTPReceiveTest(TestCase):
         self.assertEqual(len(response.body), len(content))
         self.assertEqual(response.body, content)
 
+    def test_receive_200_with_spaceseparator_in_header(self):
+        content = """{\"hello\" : \"world\"}"""
+        message = """HTTP/1.0 200 OK\r\nContent-Type: application/xml; charset=utf-8\r\nContent-Length: 19\r\nCache-Control: max-age=10,must-revalidate\r\nExpires: Sun, 29 Nov 2015 10:41:26 GMT\r\nServer: Eve/0.5.3 Werkzeug/0.9.6 Python/2.7.6\r\nDate: Sun, 29 Nov 2015 10:41:06 GMT\r\n\r\n%s\r\n\r\n""" % content
+        http = HTTP()
+        response = http.receive(FakeTransport(message))
+        self.assertEquals(len(response.body), len(repr(content)[1:-1]))
+        self.assertEqual(response.body, content)
+
+        
     def xtest_receive_200_with_chunked_multi_body(self):
         message = """HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nTransfer-Encoding : chunked\r\n\r\n1a\r\nABCDEFGHIJKLMNOPQRSTUVWXYZ\r\n34\r\nABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ\r\n34\r\nABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ\r\n34\r\nABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ\r\n34\r\nABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ\r\n0\r\n\r\n0"""
         http = HTTP()

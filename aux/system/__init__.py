@@ -33,20 +33,20 @@ def find_systemtype(systemtype):
     ## NEED TO LOOKUP IN system.device and system.service and aux_device and aux_service
     ## this implementation is hack and also needs a cache file for aux devices and services so that we only need to scan plugins
     foundfile = None
-    s_filter = ['ext', '.pyc']
+    s_filter = ['ext', '.pyc', '__init__']
 
     for module in [device, service]:
         if foundfile is None:
             modulepath = os.path.dirname(module.__file__)
             files = system_filter([os.path.join(modulepath,r) for r in os.listdir(modulepath)], s_filter)
             foundfile = scan_files(files, systemtype)
-
+            
     for plugin_module in ['aux_device_', 'aux_service_']:
         if foundfile is None:
             for s in [p for p in sys.path if plugin_module in p]: 
                 modulepath = imp.find_module(os.path.split(s)[1])[1]
                 files = system_filter([os.path.join(modulepath,r) for r in os.listdir(modulepath)], s_filter)
-                foundfile = scan_files(files, systemtype)        
+                foundfile = scan_files(files, systemtype)
         
     if foundfile is not None:
         module, fx = os.path.split(foundfile)
@@ -56,9 +56,8 @@ def find_systemtype(systemtype):
             modlist = mod1.split('_')
             modlist.insert(1,'system')
             modlist.insert(3, 'ext')
-            
         prt = imp.load_module(systemtype, open(foundfile), module, ('','',5))
-        return eval("prt.%s" % systemtype)
+        return eval("prt.%s" % (systemtype))
     raise SystemNotFoundException
 
 

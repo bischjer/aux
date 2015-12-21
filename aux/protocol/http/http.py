@@ -9,6 +9,7 @@ import aux
 import re
 import os
 import base64
+import time
 
 log = logging.getLogger("protocol")
 
@@ -22,12 +23,7 @@ TCP_FRAME_BUFFER_SIZE = 1500#bytes#hmmmm
 #TODO: enum wrapper
 HTTP_METHODS = ["OPTIONS", "GET", "HEAD",
                 "POST", "PUT", "DELETE",
-                "TRACE", "CONNECT"]#extension-method
-# M_GET  = 'GET'
-# M_POST = 'POST'
-# M_PUT  = 'PUT'
-# M_DELETE  = 'DELETE'
-# M_HEAD = 'HEAD'
+                "TRACE", "CONNECT", "PATCH"]#extension-method
 
 HTTP_RESPONSE_CODES = {"100": "Continue",
                        "101": "Switching Protocols",
@@ -105,7 +101,7 @@ class HTTPRequest(HTTPMessage):
             l = list(self.url)
             l[2] = l[2] + "/"
             self.url = urlparse(urlunparse(l))
-        headers = {'Host': self.url.hostname,
+        headers = {'Host': self.url.hostname+":%i" % (self.url.port),
                    'User-Agent': USER_AGENT}
         headers.update(request_data.get('headers', {}))
         super(HTTPRequest, self).__init__(headers,
@@ -177,8 +173,13 @@ class HTTP(object):
 
     def receive(self, transport):
         #TODO: this impl needs TLC
-        inbuf = transport.recv(TCP_DEFAULT_FRAME_SIZE)
-        inbuf = inbuf.split("\n")
+        #receive.test for valid headstring or timeout then
+        #headertester then return transfer object that returns responseobj
+        inbuf = ""
+        for t in xrange(0,10):
+            inbuf += transport.recv(TCP_DEFAULT_FRAME_SIZE)
+            time.sleep(0.001)
+        inbuf = inbuf.split("\r\n")
         # inbuf = transport.recv_all()
         sl = inbuf[0]
         #Validate start-line and remove it from buffer
@@ -196,18 +197,23 @@ class HTTP(object):
         t_lines = tail_msg.split("\r\n\r\n")
         if len(t_lines) == 1: #Servers can respond with \r\n or \n
             t_lines = tail_msg.split("\n\n")
-        h_lines = t_lines[0].split("\n")
+        h_lines = t_lines[0].split("\r\n")
         line_counter = 0
         for line in h_lines:
             line_counter += 1
-            if ":" in line:
+            if len(line) < 1:
+                break
+            elif ":" in line:
                 re_group = re_headline.match(line).groups()
                 headers[re_group[0]] = re_group[1]
             else:
                 break
+
+        print h_lines
         tail_msg = tail_msg[len(t_lines[0]):]
         # if self.__has_trace:
         #     print tail_msg
+        print '[',tail_msg,']'
         log.debug(headers)
         Transfer = transferFactory(headers)
         Mime = mimeFactory(headers)
