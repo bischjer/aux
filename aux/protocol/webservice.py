@@ -12,7 +12,7 @@ class WebService(object):
     def __init__(self, source, client):
         self.source = source
         self.client = client
-        # print self.source
+        # print( self.source )
 
 
 class WSDLService(WebService):
@@ -21,10 +21,10 @@ class WSDLService(WebService):
         super(WSDLService, self).__init__(source, client)
         wsdl_response = http.get(self.client.get_proxy(self.source),
                                  headers=self.client.headers)
-        # print wsdl_response.body
+        # print( wsdl_response.body )
         resource = etree.XML(wsdl_response.body)
         self.definitions = WSDLDefinitions(resource)
-        # print "source", self.source
+        # print( "source", self.source)
         
     @classmethod
     def get_ns(cls, elmenet, namepspace):
@@ -78,7 +78,7 @@ class WSClient(object):
                 source_name = os.path.basename(source).replace('.wsdl','')
                 self.webservices[source_name] = webservice_factory(source, self)
         except WebServiceNotFoundError, e:
-            print e.message
+            print( e.message )
 
     def set_credentials(self, credentials):
         self.credentials = credentials
@@ -90,10 +90,10 @@ class WSClient(object):
 
     
     def __getattr__(self, attr):
-        # print 'attr', attr
+        # print( 'attr', attr )
         definition = self.webservices.get(attr, None)
         if definition is not None:
-            print definition
+            print( definition )
             return definition
         else:
             emsg = "%s object has no attribute '%s'" % (self.__class__.__name__,

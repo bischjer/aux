@@ -27,8 +27,8 @@ class JSONDL(object):
                         self.data['request'] = json.loads(types[_type])
                     # TODO: BUG: not in types definition
                     # if _type in annotationtypes:
-                    #     print "annotation"
-                    #     print types[_type]
+                    #     print( "annotation")
+                    #     print( types[_type])
                 mappingkey = 'org.springframework.web.bind.annotation.RequestMapping'
                 self.requestMapping = self.method.get('def').get('annotations').get(mappingkey)
                 
@@ -49,9 +49,9 @@ class JSONDL(object):
                     for prop in properties:
                         # if kwargs.get(prop, False) != False:
                         #     if type_mapping[properties[prop].get('type')] == type(kwargs[prop]):
-                        #         print "right type %s" % type(kwargs[prop])
+                        #         print( "right type %s" % type(kwargs[prop]))
                         #     else:
-                        #         print "wrong type %s expected %s" % (type(kwargs[prop]),properties[prop].get('type'))
+                        #         print( "wrong type %s expected %s" % (type(kwargs[prop]),properties[prop].get('type')))
                         request_json[prop] = kwargs.get(prop, None)
                 #TODO: make a validation log with properties
                 method = self.requestMapping.get('properties').get('method')[0]
@@ -60,7 +60,7 @@ class JSONDL(object):
                 for key in request_json.keys():
                     if key in path:
                         path = path.replace('{'+key+'}', str(kwargs[key]))
-                # print path
+                # print( path)
                 response = http.http_send(method,
                                           self.ssp_instance.get_proxy(path),
                                           self.ssp_instance.headers,

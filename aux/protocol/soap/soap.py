@@ -43,7 +43,7 @@ class SOAPResponse(object):
         self.body = self.soap2json(self.http_response.body)
 
     def soap2json(self, xml):
-        # print xml
+        # print( xml)
         
         return xml
         

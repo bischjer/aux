@@ -85,7 +85,7 @@ class LogController(object):
 
     def pprint_header_on_init(self):
         if self.log_verbose:
-            print "-"*70
+            print( "-"*70 )
             self.runtime.info("Options : %s" % (self.config.options))
             self.runtime.info("Args : %s" % (self.config.args))
         
@@ -96,12 +96,12 @@ class LogController(object):
             except:
                 pass
         if self.log_verbose:
-            print "-"*70
-            print "- AUX %s - Summary" % version()
-            print "-"*70
+            print( "-"*70 )
+            print( "- AUX %s - Summary" % version() )
+            print( "-"*70 )
             for key in self.summary.keys():
-                print "- %s: %s" % (key, self.summary[key])
-            print "-"*70
+                print( "- %s: %s" % (key, self.summary[key]) )
+            print( "-"*70 )
                 
     def copy_systems_file_to_logdir(self, systems):
         newurl = None

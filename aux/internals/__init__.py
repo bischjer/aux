@@ -4,7 +4,7 @@ import sys
 
 
 def no_plugin_name_message():
-    print "No plugin name"
+    print( "No plugin name" )
     sys.exit(0)                
 
 def plugin_creator_routine(plugincreator, arguments):
@@ -31,7 +31,7 @@ def plugin_creator_routine(plugincreator, arguments):
                                                                                     packagename))
         else:
             no_plugin_name_message()            
-    print 'Install plugin by running:\npip install -e %s' % packagename        
+    print( 'Install plugin by running:\npip install -e %s' % packagename )
     sys.exit(0)
 
 

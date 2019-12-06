@@ -37,9 +37,9 @@ def run():
     ## - read config file
     try:
         config.load_default_properties()
-    except Exception, e:
-        print 'Falling back to default settings.'
-        print e.message
+    except Exception as e:
+        print( 'Falling back to default settings.' )
+        print( e.message )
 
     ## - initiate logger        
     logcontroller = LogController(config)

@@ -27,8 +27,7 @@ class WSDLInterface(WSDLPortType):pass
 class XMLComplexType(object):
     def __init__(self, e):
         self.e = e
-        # print etree.tostring(e)
-        # print 
+        # print( etree.tostring(e) )
         self.seq = self.e.findall('%ssequence' % WSDLClient.get_ns(self.e, 'xs'))
         elems = None
         if len(self.seq) > 0:
@@ -38,10 +37,9 @@ class XMLComplexType(object):
         else:
             self.elements = elems
             # for el in elems:
-                # print el.get('name')
-                # print el.get('type')
-                # print etree.tostring(el)
-                # print
+                # print( el.get('name') )
+                # print( el.get('type') )
+                # print( etree.tostring(el) )
 
             
 class XMLSimpleType(object):
@@ -113,7 +111,7 @@ class WSDLService(object):
 class WSDLDefinitions(object):
     def __init__(self, e):
         self.e = e
-        # print etree.tostring(self.e)
+        # print( etree.tostring(self.e))
         self.name = e.get('name')
         self.types = [WSDLTypes(t) for t in self.e.findall('%stypes' % WSDLClient.get_ns(self.e, 'wsdl'))]
         self.messages = [WSDLMessage(m) for m in self.e.findall('%smessage' % WSDLClient.get_ns(self.e, 'wsdl'))]
@@ -201,7 +199,7 @@ class WSDLClient(object):
                 return soaprequest.send()
             
         definition = self.definitions.get(attr, None)
-        # print definition.service.name
+        # print( definition.service.name )
         if definition is not None:
             return WSDLo(self,
                          self.definitions.get(attr))
